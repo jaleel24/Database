@@ -1,0 +1,74 @@
+----NAME:JALEEL
+----Student number:215800493
+---Project 4 Applicaion
+---PArt A
+
+
+
+
+-- Part A Quesion 1
+-- I am literally dropping the existed constraints and  writing a new ones according to the question requirements
+-- in part A i am basically deleting the book from the parent table and all its children tables by using
+-- on delete cascade
+
+ALTER TABLE yrb_offer drop constraint yrb_off_fk_book;
+ALTER TABLE yrb_purchase drop constraint yrb_pur_fk_offer;
+
+ALTER TABLE yrb_offer ADD constraint yrb_off_fk_book_with_del
+foreign key (title, year) references yrb_book on delete cascade;
+
+ALTER TABLE yrb_purchase add constraint yrb_pur_fk_offer_with_del
+foreign key (club, title, year) references yrb_offer on delete cascade;
+
+--Test constraint one
+--DELETE FROM yrb_book WHERE TITLE='Humor in SQL'
+--SELECT * FROM yrb_book Where TITLE='Humor in SQL'
+
+
+-- Part A Question 2
+-- I am literally dropping the existed constraints and  writing a new ones according to the question requirements
+-- in part A i am making sure that if a customer wants to buy a book not offered in the customer club the insertion of that purchase will be
+-- rejected and Since we know that in yrb_create.sql already has the required constraint,
+--any insertion where a cid member does not match with the club as these are composite keys, the terminal will return error saying such foreign key does not exist.
+
+alter table yrb_purchase drop constraint yrb_pur_fk_mem;
+alter table yrb_member drop constraint yrb_mem_fk_cust;
+
+
+alter table yrb_member add constraint yrb_mem_fk_cust_v2
+        foreign key (cid) references yrb_customer;
+
+
+alter table yrb_purchase add constraint yrb_pur_fk_mem_re
+        foreign key (club, cid) references yrb_member;
+
+
+
+-- part A Question 3 i have written a trigger which makes sure that every time
+-- a customer is added or inserted into the yrb_customer
+-- it should automatically make that customer a member of basic club
+CREATE TRIGGER basic_member
+              AFTER INSERT ON YRB_CUSTOMER REFERENCING NEW ROW AS NewTuple
+              FOR EACH ROW
+              INSERT INTO yrb_member(CLUB,CID)
+              VALUES('Basic',NewTuple.CID);
+
+
+---Test Constraint for 3rd
+INSERT INTO yrb_customer(CID,NAME,CITY) VALUES(215,'JALEEL','TORONTO');
+SELECT * FROM yrb_member WHERE CID=215;
+
+
+--Test constraint one
+DELETE FROM yrb_book WHERE TITLE='Humor in SQL';
+SELECT * FROM yrb_book Where TITLE='Humor in SQL';
+
+--Test constraint for quesion 2
+---INSERT INTO YRB_PURCHASE(CID, CLUB, TITLE, YEAR, WHEN, QNTY) VALUES (100, 'bbb', 'Eigen Eigen', 1980, '2001-07-14-11.36.00.000000', 1);
+--this is the error you are suppose to get
+----when you run it and test ou get this error The insert or update value of the FOREIGN KEY
+---"JALEEL24.YRB_PURCHASE.YRB_PUR_FK_OFFER_WITH_DEL" is not equal to any value of
+--the parent key of the parent table
+
+
+INSERT INTO YRB_PURCHASE(CID, CLUB, TITLE, YEAR, WHEN, QNTY) VALUES (100, 'bbb', 'Eigen Eigen', 2080, '2001-07-14-11.36.00.000000', 1);

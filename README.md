@@ -1,6 +1,8 @@
 # Database
 JDBC_project, Schema_project, Complex_queries etc
+
 -------------------------- Summary------------------------------------
+
 --Project files includes complex Queries refer to project3 Pdf
 
 --Further it includes schema of data base
